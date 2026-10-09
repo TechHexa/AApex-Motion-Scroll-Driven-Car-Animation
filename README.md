@@ -81,7 +81,7 @@ apex-motion/
 Download or clone the project repository.
 
 ```bash
-git clone <YOUR-REPOSITORY-URL>
+git clone <https://github.com/TechHexa/Animation-Car>
 ```
 
 Navigate to the project directory:
@@ -151,6 +151,8 @@ Ensure all asset filenames and file paths match exactly, including capitalizatio
 - Improved mobile audio controls.
 - Additional camera angles and car animations.
 - Performance optimization and accessibility improvements.
+
+## Demo Link 🔗 
 
 ## 👨‍💻 Author
 
