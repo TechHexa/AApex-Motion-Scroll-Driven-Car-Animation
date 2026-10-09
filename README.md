@@ -81,7 +81,7 @@ apex-motion/
 Download or clone the project repository.
 
 ```bash
-git clone <https://github.com/TechHexa/Animation-Car>
+git clone https://github.com/TechHexa/Animation-Car>](https://github.com/TechHexa/AApex-Motion-Scroll-Driven-Car-Animation
 ```
 
 Navigate to the project directory:
