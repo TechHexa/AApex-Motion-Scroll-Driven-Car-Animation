@@ -1,0 +1,939 @@
+/* ==========================================================================
+   Apex Motion | Modern Scroll-Driven Hero Section Animation
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Design Tokens & Variables
+   -------------------------------------------------------------------------- */
+:root {
+  --bg-primary: #0a0b0e;
+  --bg-secondary: #12141c;
+  --bg-track: #151822;
+  
+  --lime-accent: #def54f;
+  --lime-glow: rgba(222, 245, 79, 0.45);
+  
+  --cyan-accent: #6ac9ff;
+  --cyan-glow: rgba(106, 201, 255, 0.45);
+  
+  --orange-accent: #fa7328;
+  --orange-glow: rgba(250, 115, 40, 0.45);
+  
+  --trail-green: #45db7d;
+  --trail-green-glow: rgba(69, 219, 125, 0.5);
+  
+  --text-primary: #ffffff;
+  --text-muted: #8b92a5;
+  --text-dark: #0f1117;
+  
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Space Grotesk', sans-serif;
+  
+  --road-height: 220px;
+  --car-height: 170px;
+}
+
+/* --------------------------------------------------------------------------
+   Reset & Base Styles
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% 20%, #161a26 0%, var(--bg-primary) 65%);
+  overflow-x: hidden;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ambient Backdrops */
+.ambient-glow {
+  position: fixed;
+  width: 550px;
+  height: 550px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(140px);
+  opacity: 0.18;
+}
+
+.ambient-glow.top-left {
+  top: -120px;
+  left: -120px;
+  background: radial-gradient(circle, var(--trail-green), transparent);
+}
+
+.ambient-glow.bottom-right {
+  bottom: -150px;
+  right: -100px;
+  background: radial-gradient(circle, var(--cyan-accent), transparent);
+}
+
+.tech-grid-overlay {
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Site Header
+   -------------------------------------------------------------------------- */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  padding: 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+  background: linear-gradient(to bottom, rgba(10, 11, 14, 0.85) 0%, rgba(10, 11, 14, 0) 100%);
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  background: rgba(222, 245, 79, 0.12);
+  color: var(--lime-accent);
+  border: 1px solid rgba(222, 245, 79, 0.35);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #fff;
+}
+
+.brand-name .dot {
+  color: var(--trail-green);
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--trail-green);
+  box-shadow: 0 0 10px var(--trail-green);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.hud-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.hud-btn.primary {
+  background: var(--lime-accent);
+  color: var(--text-dark);
+  border-color: var(--lime-accent);
+  font-weight: 700;
+}
+
+.hud-btn.primary:hover {
+  box-shadow: 0 0 20px var(--lime-glow);
+}
+
+.sound-eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  margin-left: 2px;
+}
+
+.eq-bar {
+  width: 2.5px;
+  background: var(--text-dark);
+  border-radius: 1px;
+  animation: eqPulse 0.4s ease infinite alternate;
+}
+
+.hud-btn:not(.primary) .eq-bar {
+  background: var(--lime-accent);
+}
+
+.eq-bar:nth-child(1) { height: 6px; animation-duration: 0.35s; }
+.eq-bar:nth-child(2) { height: 13px; animation-duration: 0.25s; }
+.eq-bar:nth-child(3) { height: 8px; animation-duration: 0.45s; }
+
+@keyframes eqPulse {
+  0% { transform: scaleY(0.3); }
+  100% { transform: scaleY(1); }
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Scroll Track & Stage
+   -------------------------------------------------------------------------- */
+.scroll-container {
+  position: relative;
+  /* 300vh height gives expansive, silky smooth scrub progression */
+  height: 320vh;
+}
+
+.hero-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 85px 0 30px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+/* --------------------------------------------------------------------------
+   Intro Header Eyebrow
+   -------------------------------------------------------------------------- */
+.headline-container {
+  text-align: center;
+  z-index: 15;
+  padding: 0.5rem 1.5rem 0;
+  pointer-events: none;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  color: var(--trail-green);
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+   Roadway Track Surface
+   -------------------------------------------------------------------------- */
+.roadway-wrapper {
+  position: relative;
+  width: 100%;
+  margin: auto 0;
+  z-index: 20;
+}
+
+.road-edge {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, 
+    rgba(69, 219, 125, 0.4) 0%, 
+    rgba(222, 245, 79, 0.6) 50%, 
+    rgba(106, 201, 255, 0.4) 100%
+  );
+  box-shadow: 0 0 12px rgba(69, 219, 125, 0.3);
+}
+
+.road-surface {
+  position: relative;
+  width: 100vw;
+  height: var(--road-height);
+  background-color: var(--bg-track);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Center Dashed Highway Line */
+.lane-markings {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.12) 0px,
+    rgba(255, 255, 255, 0.12) 45px,
+    transparent 45px,
+    transparent 90px
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Dynamic Kinetic Trail (Green reveal trail behind car)
+   -------------------------------------------------------------------------- */
+.kinetic-trail {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #18b559 0%, #30d16e 70%, var(--trail-green) 100%);
+  z-index: 3;
+  box-shadow: 0 0 35px var(--trail-green-glow);
+  will-change: width;
+  pointer-events: none;
+}
+
+.trail-glow {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 30px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4));
+  filter: blur(4px);
+}
+
+/* --------------------------------------------------------------------------
+   Illuminated Headline inside Roadway (Signature Reference Feature)
+   -------------------------------------------------------------------------- */
+.value-add {
+  position: absolute;
+  top: 50%;
+  left: 4%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: clamp(0.1rem, 0.4vw, 0.5rem);
+  font-family: var(--font-main);
+  font-size: clamp(3rem, 7.8vw, 6.8rem);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+.value-letter {
+  display: inline-block;
+  color: rgba(255, 255, 255, 0.12);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.05);
+  transition: color 0.1s ease, transform 0.1s ease, text-shadow 0.1s ease;
+  will-change: color, transform;
+}
+
+.value-letter.space {
+  width: clamp(1rem, 2vw, 2.5rem);
+}
+
+/* When car drives past and trail fills underneath: vibrant high-contrast black fill */
+.value-letter.revealed {
+  color: #0b0d12 !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+  font-weight: 950;
+  transform: scale(1.02);
+}
+
+/* --------------------------------------------------------------------------
+   Car Chassis Object
+   -------------------------------------------------------------------------- */
+.car-chassis {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: var(--car-height);
+  transform: translateY(-50%);
+  z-index: 10;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.car-image {
+  height: var(--car-height);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.85));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Headlight Beams Projecting Forward */
+.headlight-beam {
+  position: absolute;
+  left: 88%;
+  width: 260px;
+  height: 48px;
+  background: linear-gradient(
+    90deg, 
+    rgba(255, 255, 255, 0.6) 0%, 
+    rgba(222, 245, 79, 0.3) 45%, 
+    transparent 100%
+  );
+  clip-path: polygon(0% 35%, 100% 0%, 100% 100%, 0% 65%);
+  filter: blur(6px);
+  pointer-events: none;
+  opacity: 0.9;
+  z-index: 9;
+}
+
+.beam-left {
+  top: 15%;
+  transform: rotate(-3deg);
+}
+
+.beam-right {
+  bottom: 15%;
+  transform: rotate(3deg);
+}
+
+/* Taillight Red Glow Flares */
+.taillight-glow {
+  position: absolute;
+  left: 2px;
+  width: 22px;
+  height: 12px;
+  background: #ff2a2a;
+  box-shadow: 0 0 18px 6px rgba(255, 42, 42, 0.85);
+  border-radius: 50%;
+  filter: blur(2px);
+  z-index: 9;
+}
+
+.glow-left {
+  top: 28%;
+}
+
+.glow-right {
+  bottom: 28%;
+}
+
+/* --------------------------------------------------------------------------
+   Floating Metric Cards Layer
+   -------------------------------------------------------------------------- */
+.metric-cards-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.metric-card {
+  position: absolute;
+  pointer-events: auto;
+  min-width: 240px;
+  max-width: 290px;
+  padding: 1.4rem 1.6rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(12px);
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  will-change: transform, opacity;
+  transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.3s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px) scale(1.02) !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+}
+
+/* Card 1: Lime Accent (Reference Box 1) */
+#box1 {
+  background: var(--lime-accent);
+  color: var(--text-dark);
+  top: 6%;
+  right: 32%;
+}
+
+/* Card 2: Cyan Accent (Reference Box 2) */
+#box2 {
+  background: var(--cyan-accent);
+  color: var(--text-dark);
+  bottom: 6%;
+  right: 38%;
+}
+
+/* Card 3: Carbon Dark Accent (Reference Box 3) */
+#box3 {
+  background: rgba(22, 26, 36, 0.92);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  top: 6%;
+  right: 8%;
+}
+
+/* Card 4: Orange Accent (Reference Box 4) */
+#box4 {
+  background: var(--orange-accent);
+  color: var(--text-dark);
+  bottom: 6%;
+  right: 12%;
+}
+
+.card-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  opacity: 0.75;
+  text-transform: uppercase;
+}
+
+.card-number-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  line-height: 1;
+}
+
+.card-number {
+  font-family: var(--font-main);
+  font-size: 3.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.percent {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.trend-icon {
+  margin-left: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.card-label {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 500;
+  line-height: 1.35;
+  opacity: 0.9;
+}
+
+.progress-bar-wrap {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 99px;
+  margin-top: 0.35rem;
+  overflow: hidden;
+}
+
+.card-carbon .progress-bar-wrap {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.card-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: currentColor;
+  border-radius: 99px;
+  transition: width 0.8s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.metric-card.active .card-progress-bar {
+  width: var(--card-fill);
+}
+
+/* --------------------------------------------------------------------------
+   Telemetry HUD Dock
+   -------------------------------------------------------------------------- */
+.telemetry-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3.5rem;
+  z-index: 30;
+}
+
+.hud-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 140px;
+}
+
+.hud-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  color: var(--text-muted);
+}
+
+.hud-digits {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.digital-value {
+  font-family: var(--font-mono);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.digital-unit {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.tachometer-bar {
+  width: 130px;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 0.2rem;
+}
+
+.tacho-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--trail-green), var(--lime-accent));
+  transition: width 0.1s ease;
+}
+
+/* Center Scroll Pip Indicator */
+.scroll-indicator {
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.mouse-icon {
+  width: 22px;
+  height: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+}
+
+.wheel-pip {
+  width: 3px;
+  height: 7px;
+  background-color: var(--trail-green);
+  border-radius: 2px;
+  animation: scrollBob 1.6s infinite ease-in-out;
+}
+
+@keyframes scrollBob {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(12px); opacity: 0; }
+}
+
+.scroll-hint-text {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Post-Hero Content Section
+   -------------------------------------------------------------------------- */
+.post-hero-section {
+  position: relative;
+  min-height: 80vh;
+  padding: 6rem 2rem;
+  background: #090a0d;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 20;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.pill-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--lime-accent);
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.section-header h2 {
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.section-header p {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.grid-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.summary-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 2.2rem;
+  border-radius: 16px;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.summary-box:hover {
+  transform: translateY(-4px);
+  border-color: rgba(222, 245, 79, 0.3);
+}
+
+.summary-box h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: #fff;
+}
+
+.summary-box p {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.footer-cta {
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Media Queries
+   -------------------------------------------------------------------------- */
+@media (max-width: 1200px) {
+  #box1 { right: 28%; top: 5%; }
+  #box2 { right: 32%; bottom: 5%; }
+  #box3 { right: 4%; top: 5%; }
+  #box4 { right: 8%; bottom: 5%; }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --road-height: 180px;
+    --car-height: 140px;
+  }
+  
+  .site-header {
+    padding: 0 1.5rem;
+  }
+  
+  .telemetry-hud {
+    padding: 0 1.5rem;
+  }
+  
+  .metric-card {
+    min-width: 210px;
+    padding: 1.1rem 1.3rem;
+  }
+  
+  .card-number {
+    font-size: 2.6rem;
+  }
+  
+  .percent {
+    font-size: 1.8rem;
+  }
+  
+  #box1 { right: 26%; top: 4%; }
+  #box2 { right: 28%; bottom: 4%; }
+  #box3 { right: 3%; top: 4%; }
+  #box4 { right: 5%; bottom: 4%; }
+}
+
+@media (max-width: 680px) {
+  :root {
+    --road-height: 150px;
+    --car-height: 110px;
+  }
+  
+  .site-header {
+    height: 60px;
+  }
+  
+  .header-center {
+    display: none;
+  }
+  
+  .hero-stage {
+    padding: 65px 0 15px;
+  }
+  
+  .telemetry-hud {
+    justify-content: space-around;
+  }
+  
+  .hud-panel {
+    min-width: auto;
+  }
+  
+  .digital-value {
+    font-size: 1.4rem;
+  }
+  
+  .tachometer-bar {
+    width: 80px;
+  }
+  
+  /* On mobile screens, cards sit gracefully above & below */
+  .metric-card {
+    min-width: 170px;
+    max-width: 190px;
+    padding: 0.9rem;
+  }
+  
+  .card-number {
+    font-size: 2rem;
+  }
+  
+  .card-label {
+    font-size: 0.72rem;
+  }
+  
+  #box1 { right: 48%; top: 3%; }
+  #box2 { right: 50%; bottom: 3%; }
+  #box3 { right: 4%; top: 3%; }
+  #box4 { right: 4%; bottom: 3%; }
+}
+
+/* --------------------------------------------------------------------------
+   Audio Toast Notification
+   -------------------------------------------------------------------------- */
+.audio-toast {
+  position: fixed;
+  bottom: 85px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(22, 26, 36, 0.95);
+  border: 1px solid var(--lime-accent);
+  color: #fff;
+  padding: 10px 22px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px var(--lime-glow);
+  z-index: 1000;
+  pointer-events: none;
+  animation: toastFadeIn 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes toastFadeIn {
+  from { opacity: 0; transform: translate(-50%, 15px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}

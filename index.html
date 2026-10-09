@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apex Motion | Scroll-Driven Hero Animation</title>
+  <meta name="description" content="High performance scroll-driven interactive hero section animation powered by vanilla JS and GSAP ScrollTrigger." />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background Ambient Glow & Tech Grid -->
+  <div class="ambient-glow top-left"></div>
+  <div class="ambient-glow bottom-right"></div>
+  <div class="tech-grid-overlay"></div>
+
+  <!-- Header Navigation -->
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-badge">PROTOTYPE</span>
+      <span class="brand-name">ITZFIZZ<span class="dot">.</span>IO</span>
+    </div>
+    <div class="header-center">
+      <span class="status-indicator"><span class="pulse-dot"></span> SCROLL ENGINE ACTIVE</span>
+    </div>
+    <div class="header-actions">
+      <button id="soundToggle" class="hud-btn" title="Toggle Engine Audio FX" aria-label="Toggle Engine Audio">
+        <svg id="soundIconOff" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+          <line x1="23" y1="9" x2="17" y2="15"/>
+          <line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        <svg id="soundIconOn" class="hidden" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        </svg>
+        <span class="btn-text" id="soundBtnText">SOUND FX: OFF</span>
+        <span class="sound-eq hidden" id="soundEq">
+          <span class="eq-bar"></span>
+          <span class="eq-bar"></span>
+          <span class="eq-bar"></span>
+        </span>
+      </button>
+      <a href="#stats" class="hud-btn secondary">EXPLORE METRICS</a>
+    </div>
+  </header>
+
+  <!-- Scroll Container: Total height provides smooth scrub runway -->
+  <main class="scroll-container" id="scrollContainer">
+    
+    <!-- Pinned Viewport Stage -->
+    <section class="hero-stage" id="heroStage">
+      
+      <!-- Top Intro Eyebrow -->
+      <div class="headline-container" id="headlineContainer">
+        <p class="eyebrow" id="eyebrow">HIGH-VELOCITY PERFORMANCE METRICS</p>
+        <p class="subtitle" id="subtitle">Scroll to drive and reveal real-time impact milestones</p>
+      </div>
+
+      <!-- Roadway & Car Highway Track -->
+      <div class="roadway-wrapper" id="roadwayWrapper">
+        <div class="road-edge top-edge"></div>
+        <div class="road-surface" id="roadSurface">
+          <!-- Center road dashes -->
+          <div class="lane-markings"></div>
+          
+          <!-- Green dynamic neon trail laid down by car -->
+          <div class="kinetic-trail" id="kineticTrail">
+            <div class="trail-glow"></div>
+          </div>
+
+          <!-- Signature Headline inside Roadway -->
+          <div class="value-add" id="valueText">
+            <span class="value-letter">W</span>
+            <span class="value-letter">E</span>
+            <span class="value-letter">L</span>
+            <span class="value-letter">C</span>
+            <span class="value-letter">O</span>
+            <span class="value-letter">M</span>
+            <span class="value-letter">E</span>
+            <span class="value-letter space">&nbsp;</span>
+            <span class="value-letter">I</span>
+            <span class="value-letter">T</span>
+            <span class="value-letter">Z</span>
+            <span class="value-letter">F</span>
+            <span class="value-letter">I</span>
+            <span class="value-letter">Z</span>
+            <span class="value-letter">Z</span>
+          </div>
+
+          <!-- Car Object with Headlights & Taillights -->
+          <div class="car-chassis" id="carChassis">
+            <!-- Front Headlight Projector Beams -->
+            <div class="headlight-beam beam-left"></div>
+            <div class="headlight-beam beam-right"></div>
+            
+            <!-- Supercar Top View Asset -->
+            <img 
+              src="car.png" 
+              alt="McLaren 720S Supercar top view" 
+              class="car-image" 
+              id="carImage"
+              draggable="false"
+            />
+
+            <!-- Rear Taillight Glow Flares -->
+            <div class="taillight-glow glow-left"></div>
+            <div class="taillight-glow glow-right"></div>
+          </div>
+        </div>
+        <div class="road-edge bottom-edge"></div>
+      </div>
+
+      <!-- Floating Impact Metric Cards (Triggered at scroll progress milestones) -->
+      <div class="metric-cards-layer" id="metricCardsLayer">
+        
+        <!-- Box 1: Lime Accent (Top Left-Center) -->
+        <article class="metric-card card-lime" id="box1" data-target="58">
+          <div class="card-badge">EFFICIENCY</div>
+          <div class="card-number-row">
+            <span class="card-number" id="num1">0</span><span class="percent">%</span>
+            <span class="trend-icon">↑</span>
+          </div>
+          <p class="card-label">Increase in pick up point use</p>
+          <div class="progress-bar-wrap">
+            <div class="card-progress-bar" style="--card-fill: 58%;"></div>
+          </div>
+        </article>
+
+        <!-- Box 2: Cyan Accent (Bottom Center) -->
+        <article class="metric-card card-cyan" id="box2" data-target="23">
+          <div class="card-badge">SUPPORT OPTIMIZATION</div>
+          <div class="card-number-row">
+            <span class="card-number" id="num2">0</span><span class="percent">%</span>
+            <span class="trend-icon down">↓</span>
+          </div>
+          <p class="card-label">Decreased in customer phone calls</p>
+          <div class="progress-bar-wrap">
+            <div class="card-progress-bar" style="--card-fill: 23%;"></div>
+          </div>
+        </article>
+
+        <!-- Box 3: Dark Carbon Accent (Top Right) -->
+        <article class="metric-card card-carbon" id="box3" data-target="27">
+          <div class="card-badge">ROUTE LOGISTICS</div>
+          <div class="card-number-row">
+            <span class="card-number" id="num3">0</span><span class="percent">%</span>
+            <span class="trend-icon">↑</span>
+          </div>
+          <p class="card-label">Increase in delivery precision</p>
+          <div class="progress-bar-wrap">
+            <div class="card-progress-bar" style="--card-fill: 27%;"></div>
+          </div>
+        </article>
+
+        <!-- Box 4: Orange Accent (Bottom Far Right) -->
+        <article class="metric-card card-orange" id="box4" data-target="40">
+          <div class="card-badge">CUSTOMER LATENCY</div>
+          <div class="card-number-row">
+            <span class="card-number" id="num4">0</span><span class="percent">%</span>
+            <span class="trend-icon down">↓</span>
+          </div>
+          <p class="card-label">Reduction in turnaround response time</p>
+          <div class="progress-bar-wrap">
+            <div class="card-progress-bar" style="--card-fill: 40%;"></div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Telemetry Dashboard HUD (Bottom Dock) -->
+      <footer class="telemetry-hud" id="telemetryHud">
+        <div class="hud-panel speed-gauge">
+          <div class="hud-label">VELOCITY</div>
+          <div class="hud-digits">
+            <span class="digital-value" id="speedValue">0</span>
+            <span class="digital-unit">KM/H</span>
+          </div>
+          <div class="tachometer-bar">
+            <div class="tacho-fill" id="tachoFill"></div>
+          </div>
+        </div>
+
+        <div class="hud-panel scroll-indicator">
+          <div class="mouse-icon">
+            <div class="wheel-pip"></div>
+          </div>
+          <span class="scroll-hint-text">SCROLL TO DRIVE</span>
+        </div>
+
+        <div class="hud-panel progress-gauge">
+          <div class="hud-label">RUNWAY PROGRESS</div>
+          <div class="hud-digits">
+            <span class="digital-value" id="progressValue">0</span>
+            <span class="digital-unit">%</span>
+          </div>
+          <div class="tachometer-bar">
+            <div class="tacho-fill" id="progressFill"></div>
+          </div>
+        </div>
+      </footer>
+
+    </section>
+
+    <!-- Post-Hero Section to demonstrate seamless exit and continued browsing -->
+    <section class="post-hero-section" id="stats">
+      <div class="container">
+        <div class="section-header">
+          <span class="pill-tag">DATA VERIFICATION</span>
+          <h2>Precision Engineering. Quantified Impact.</h2>
+          <p>Every pixel and interaction is calibrated for maximum performance, fluid responsiveness, and zero frame-drop animation.</p>
+        </div>
+        
+        <div class="grid-summary">
+          <div class="summary-box">
+            <h3>Smooth Scroll Scrub</h3>
+            <p>Tied directly to scroll coordinates via GSAP ScrollTrigger with inertial physics interpolation.</p>
+          </div>
+          <div class="summary-box">
+            <h3>Sub-Pixel Collision</h3>
+            <p>Headlight collision detection smoothly illuminates each letter as the car chassis passes by.</p>
+          </div>
+          <div class="summary-box">
+            <h3>Zero Layout Reflow</h3>
+            <p>100% transform3d & opacity rendering preserves 60–120 FPS high-refresh gaming-grade performance.</p>
+          </div>
+        </div>
+        
+        <div class="footer-cta">
+          <button id="scrollToTopBtn" class="hud-btn primary">RETURN TO START ↑</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Audio Toast Notification -->
+  <div class="audio-toast hidden" id="audioToast">
+    <span class="toast-icon">🔊</span>
+    <span class="toast-text" id="toastText">Engine Sound FX Activated</span>
+  </div>
+
+  <!-- Audio Data & Animation Scripts -->
+  <script src="script.js"></script>
+  <script src="audio-fix.js"></script>
+</body>
+</html>
